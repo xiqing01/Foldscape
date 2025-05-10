@@ -1,0 +1,43 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import client from "../data/client.json";
+import { getHtmlAttrs, getLocales, t } from "i18n:astro";
+import { trimArrSlashes, trimStringSlashes } from "@utils/utils";
+import Hreos from "src/components/Hreos";
+import LanguageSelect from '../components/TemplateComponents/LanguageSelect.astro'
+
+const locales = getLocales();
+// Trimming "/" from the beginning and end to handle URLs with or without trailing slashes.
+const trimmedLocales = trimArrSlashes(locales);
+const trimmedPathname = trimStringSlashes(Astro.url.pathname);
+
+const isLandingPage =
+  Astro.url.pathname === "/" || trimmedLocales.includes(trimmedPathname);
+---
+
+<!doctype html>
+<html {...getHtmlAttrs()}>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <title>
+      {
+        isLandingPage
+          ? `
+        ${client.name}
+        |
+        ${client.address.city},
+        ${client.address.state}`
+          : `
+            ${client.name}`
+      }
+    </title>
+  </head>
+  <body>
+    <Hreos />
+    <LanguageSelect />
+    <Footer />
+  </body>
+</html>
