@@ -1,21 +1,34 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import client from "../data/client.json";
-import { getHtmlAttrs, getLocales, t } from "i18n:astro";
+import {
+  getHtmlAttrs,
+  getLocales,
+  t,
+  getSwitcherData,
+  getLocale,
+} from "i18n:astro";
 import { trimArrSlashes, trimStringSlashes } from "@utils/utils";
 import Hreos from "src/components/Hreos";
-import LanguageSelect from '../components/TemplateComponents/LanguageSelect.astro'
+import LanguageButton from "../components/TemplateComponents/LanguageButton";
 
 const locales = getLocales();
-// Trimming "/" from the beginning and end to handle URLs with or without trailing slashes.
+const currentLocale = getLocale(); // (1) 当前语言
+const switcherData = getSwitcherData(); // (2) 各语言路径
+const target = switcherData.find(
+  // (3) 找到“另一个”语言
+  (item) => item.locale !== currentLocale
+);
+const nextHref = target?.href || "/";
+
 const trimmedLocales = trimArrSlashes(locales);
 const trimmedPathname = trimStringSlashes(Astro.url.pathname);
-
 const isLandingPage =
   Astro.url.pathname === "/" || trimmedLocales.includes(trimmedPathname);
+
+const HomeH1 = t("home:h1");
+console.log("HomeH1:", HomeH1);
 ---
 
 <!doctype html>
@@ -35,9 +48,26 @@ const isLandingPage =
       }
     </title>
   </head>
-  <body>
-    <Hreos />
-    <LanguageSelect />
-    <Footer />
+  <body class="overflow-hidden w-screen h-screen">
+    <div class="bg-zinc-950/[89%] bg-blend-overlay w-full h-dvh">
+      <div class="relative w-full z-10">
+        <div
+          class="absolute bg-amber-100/5 mix-blend-multiply w-96 h-96 lg:w-xl lg:h-[576px] rounded-full -top-30 -left-30 blur-sm animate-blob animate-delay-2000"
+        >
+        </div>
+        <div
+          class="absolute bg-yellow-300/10 mix-blend-multiply w-96 h-96 lg:w-[768px] lg:h-[768px] rounded-full !top-[100px] left-1/2 -translate-x-1/2 blur-sm animate-blob"
+        >
+        </div>
+        <div
+          class="absolute bg-amber-100/10 mix-blend-multiply w-96 h-96 lg:w-xl lg:h-[576px] rounded-full top-60 -right-2 md:-right-30 blur-sm animate-blob animate-delay-4000"
+        >
+        </div>
+      </div>
+      <div class="relative z-20 top-2.5 left-1/2">
+        <LanguageButton client:load nextHref={nextHref} />
+      </div>
+      <Hreos h1={HomeH1} />
+    </div>
   </body>
 </html>

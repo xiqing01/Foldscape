@@ -1,11 +1,11 @@
 import React from 'react'
-import { getHtmlAttrs, getLocales, t } from "i18n:astro";
 
 
-function Hreos() {
-  
+
+function Hreos({h1}) {
+
   return (
-    <div>Hreos</div>
+    <div>{h1}</div>
   )
 }
 
